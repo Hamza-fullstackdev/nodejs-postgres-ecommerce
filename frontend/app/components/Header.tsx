@@ -1,5 +1,4 @@
 import { Input } from "@/components/ui/input";
-import React from "react";
 
 const Header = () => {
   return (
@@ -11,7 +10,7 @@ const Header = () => {
         </p>
       </div>
       <header className='border-b border-gray-200'>
-        <div className='flex justify-between items-center max-w-6xl mx-auto p-4'>
+        <div className='flex justify-between items-center max-w-6xl xl:max-w-7xl mx-auto p-4'>
           <h2 className='text-2xl font-bold'>Exclusive</h2>
           <nav>
             <ul className='flex space-x-8 md:space-x-10'>

@@ -21,10 +21,12 @@ export default function RootLayout({
 }>) {
   return (
     <html lang='en'>
-      <body className={`${exo.className} antialiased`}>
+      <body className={`${exo.className} antialiased max-w-[1440px] mx-auto`}>
         <StoreProvider>
           <Header />
-          {children}
+          <main className='max-w-6xl xl:max-w-7xl mx-auto px-4'>
+            {children}
+          </main>
         </StoreProvider>
       </body>
     </html>
