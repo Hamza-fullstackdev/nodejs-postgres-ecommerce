@@ -36,7 +36,6 @@ export const registerUser = async (req, res, next) => {
         success: true,
         statusCode: 201,
         message: "User added successfully",
-        data: user[0],
       });
     } else {
       return next(errorHandler(500, "User insert failed"));
@@ -62,6 +61,7 @@ export const loginUser = async (req, res, next) => {
       const isPasswordMatch = await comparePassword(password, user[0].password);
       if (isPasswordMatch) {
         const jwtToken = generateJWT(user[0].id);
+        const { password, ...rest } = user[0];
         res.cookie("token", jwtToken, {
           httpOnly: true,
           secure: true,
@@ -72,7 +72,7 @@ export const loginUser = async (req, res, next) => {
           success: true,
           statusCode: 200,
           message: "User logged in successfully",
-          data: user[0],
+          data: rest,
         });
       } else {
         return next(errorHandler(401, "Incorrect credentials"));

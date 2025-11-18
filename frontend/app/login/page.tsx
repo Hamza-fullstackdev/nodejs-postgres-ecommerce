@@ -2,6 +2,7 @@
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { loginUser } from "@/redux/features/user/userSlice";
 import axios from "axios";
 import { AlertCircleIcon } from "lucide-react";
 import Image from "next/image";
@@ -9,18 +10,16 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { FcGoogle } from "react-icons/fc";
+import { useDispatch } from "react-redux";
 
 export default function Register() {
   const navigate = useRouter();
+  const dispatch = useDispatch();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [formData, setFormData] = useState({
-    first_name: "",
-    last_name: "",
     email: "",
     password: "",
-    phone: "",
-    avatar: "",
   });
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -33,7 +32,7 @@ export default function Register() {
     try {
       setLoading(true);
       const response = await axios.post(
-        `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/v1/auth/register`,
+        `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/v1/auth/login`,
         formData,
         {
           headers: {
@@ -42,8 +41,9 @@ export default function Register() {
         }
       );
       setLoading(false);
-      if (response.status === 201) {
-        navigate.push("/login");
+      if (response.status === 200) {
+        navigate.push("/");
+        dispatch(loginUser(response.data.data));
       }
     } catch (error: any) {
       setLoading(false);
@@ -61,7 +61,7 @@ export default function Register() {
           <Image src='/static/register-img.png' alt='register-img' fill />
         </div>
         <div className='w-full md:w-1/2 flex flex-col items-center justify-center'>
-          <div>
+          <div className='min-w-[400px]'>
             {error && (
               <Alert className='mb-3' variant={"destructive"}>
                 <AlertCircleIcon />
@@ -69,55 +69,10 @@ export default function Register() {
                 <AlertDescription>{error}</AlertDescription>
               </Alert>
             )}
-            <h1 className='text-2xl font-bold'>Register your account</h1>
+            <h1 className='text-2xl font-bold'>Login to Exclusive</h1>
             <p className='mt-1'>Enter your details below</p>
             <form className='my-8' onSubmit={handleFormData}>
               <div className='grid grid-cols-1 md:grid-cols-2 space-x-5 space-y-8'>
-                <div>
-                  <Label htmlFor='first_name' className='sr-only'>
-                    First Name
-                  </Label>
-                  <Input
-                    type='text'
-                    name='first_name'
-                    id='first_name'
-                    autoComplete='on'
-                    required
-                    onChange={handleChange}
-                    placeholder='First Name'
-                    className='border-x-0 border-t-0 shadow-none rounded-none focus-visible:ring-0 outline-none'
-                  />
-                </div>
-                <div>
-                  <Label htmlFor='last_name' className='sr-only'>
-                    Last Name
-                  </Label>
-                  <Input
-                    type='text'
-                    name='last_name'
-                    id='last_name'
-                    autoComplete='on'
-                    required
-                    onChange={handleChange}
-                    placeholder='Last Name'
-                    className='border-x-0 border-t-0 shadow-none rounded-none focus-visible:ring-0 outline-none'
-                  />
-                </div>
-                <div className='col-span-2'>
-                  <Label htmlFor='phone' className='sr-only'>
-                    Phone
-                  </Label>
-                  <Input
-                    type='tel'
-                    name='phone'
-                    id='phone'
-                    autoComplete='on'
-                    required
-                    onChange={handleChange}
-                    placeholder='Phone'
-                    className='border-x-0 border-t-0 shadow-none rounded-none focus-visible:ring-0 outline-none'
-                  />
-                </div>
                 <div className='col-span-2'>
                   <Label htmlFor='email' className='sr-only'>
                     Email
@@ -155,21 +110,21 @@ export default function Register() {
                   disabled={loading}
                   className='w-full bg-[#DB4444] text-white py-2 rounded cursor-pointer disabled:cursor-not-allowed disabled:opacity-50'
                 >
-                  Create Account
+                  Login
                 </button>
                 <button className='w-full flex items-center justify-center gap-3 border border-gray-300 py-2 rounded cursor-pointer'>
                   <FcGoogle size={20} />
-                  Sign up with Google
+                  Login with Google
                 </button>
               </div>
               <div className='mt-5 text-center'>
                 <span className='text-gray-600 text-sm'>
-                  Already have an account?{" "}
+                  Don&apos;t have an account?{" "}
                   <Link
-                    href={"/login"}
                     className='text-[#DB4444] cursor-pointer'
+                    href='/register'
                   >
-                    Login
+                    Register
                   </Link>
                 </span>
               </div>
