@@ -1,6 +1,6 @@
 import React from "react";
-import Sidebar from "@/app/components/Sidebar";
-import Banners from "@/app/components/Banners";
+import Sidebar from "@/app/components/home/Sidebar";
+import Banners from "@/app/components/home/Banners";
 
 const HeroSection = () => {
   return (
