@@ -7,10 +7,15 @@ import { comparePassword } from "../helpers/compare-password.js";
 import { generateJWT } from "../utils/generateJWT.js";
 
 export const registerUser = async (req, res, next) => {
-  const { first_name, last_name, email, password, phone, avatar } = req.body;
+  const { first_name, last_name, email, password, phone } = req.body;
 
   if (!first_name || !last_name || !email || !password || !phone)
     return next(errorHandler(400, "All fields are required"));
+
+  if (password.length < 8)
+    return next(
+      errorHandler(400, "Password must be at least 8 characters long")
+    );
 
   const isEmail = isValidEmail(email);
   if (!isEmail) return next(errorHandler(400, "Invalid email format"));
