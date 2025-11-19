@@ -12,7 +12,7 @@ const Header = () => {
       <header className='border-b border-gray-200'>
         <div className='flex justify-between items-center max-w-6xl xl:max-w-7xl mx-auto p-4'>
           <h2 className='text-2xl font-bold'>Exclusive</h2>
-          <nav>
+          <nav className='hidden md:block'>
             <ul className='flex space-x-8 md:space-x-10'>
               <li>Home</li>
               <li>Contact</li>
@@ -20,7 +20,7 @@ const Header = () => {
               <li>Register</li>
             </ul>
           </nav>
-          <div>
+          <div className='hidden md:block'>
             <Input
               type='search'
               name='search'

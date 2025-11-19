@@ -20,7 +20,7 @@ const FlashSales = () => {
           <p className='text-[#DB4444] ml-3 font-semibold'>Today&apos;s</p>
         </div>
         <div className='my-3 flex items-center gap-5 justify-between'>
-          <h3 className='text-4xl font-semibold'>Flash Sales</h3>
+          <h3 className='text-3xl font-semibold'>Flash Sales</h3>
           <Clock targetDate='2025-11-22T23:59:59' />
         </div>
       </div>

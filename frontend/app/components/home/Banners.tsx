@@ -22,11 +22,11 @@ const Banners = () => {
                     <FaApple className='text-white w-10 h-10' />
                     <span className='text-white text-sm'>Iphone 14 Series</span>
                   </div>
-                  <h2 className='text-4xl font-semibold text-white p-4 my-3 leading-relaxed tracking-wide whitespace-pre-line'>
+                  <h2 className='text-4xl font-semibold text-white my-3 leading-relaxed tracking-wide whitespace-pre-line'>
                     Upto 10%{`\n`}Off Voucher
                   </h2>
                   <div>
-                    <button className='ml-5 flex items-center gap-3 border-b border-white/70 text-white cursor-pointer'>
+                    <button className='flex items-center gap-3 border-b border-white/70 text-white cursor-pointer'>
                       Shop Now <FaArrowRight />
                     </button>
                   </div>
