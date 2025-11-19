@@ -16,7 +16,7 @@ export const createUserScheama = async () => {
             )`;
     console.log("users table created successfully");
   } catch (error) {
-    console.error("❌ Error creating users table:", error);
+    console.error("Error creating users table:", error);
   } finally {
     await sql.end();
   }
