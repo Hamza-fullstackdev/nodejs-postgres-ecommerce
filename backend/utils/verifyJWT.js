@@ -8,7 +8,7 @@ const verifyJwt = async (req, res, next) => {
     const token = req.cookies.token;
     const decoded = jwt.verify(token, config.jwtSecret);
     req.user = await sql`
-      SELECT * FROM users WHERE id = ${decoded.id}
+      SELECT * FROM users WHERE id = ${decoded.id} AND isverified = true
     `;
     next();
   } catch (error) {

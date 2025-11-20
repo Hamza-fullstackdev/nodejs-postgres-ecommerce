@@ -12,6 +12,11 @@ export const createUserScheama = async () => {
                 phone VARCHAR(20) UNIQUE NOT NULL,
                 avatar VARCHAR(255) DEFAULT 'https://lthzisgkdarraifglrnu.supabase.co/storage/v1/object/public/static/avatar.png',
                 role VARCHAR(255) NOT NULL DEFAULT 'user' CHECK (role IN ('user', 'admin')),
+                isverified BOOLEAN NOT NULL DEFAULT false,
+                verifytoken VARCHAR(255),
+                verifytokenexpiry TIMESTAMP,
+                resetpasswordtoken VARCHAR(255),
+                resetpasswordexpiry TIMESTAMP,
                 createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP
             )`;
     console.log("users table created successfully");

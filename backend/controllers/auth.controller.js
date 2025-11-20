@@ -9,6 +9,7 @@ import { sendEmail } from "../helpers/send-mail.js";
 import { nanoid } from "nanoid";
 import { config } from "../config/env-config.js";
 import { cleanValue } from "../helpers/clean-value.js";
+import crypto from "crypto";
 
 export const registerUser = async (req, res, next) => {
   const { first_name, last_name, email, password, phone } = req.body;
@@ -134,4 +135,70 @@ export const verifyEmail = async (req, res, next) => {
       errorHandler(500, "Something went wrong, please try again later")
     );
   }
+};
+
+export const forgotPassword = async (req, res) => {
+  const { email } = req.body;
+
+  const genericMessage = {
+    message:
+      "If an account with this email exists, a reset link has been sent.",
+  };
+
+  const user = await sql`SELECT * FROM users WHERE email = ${email}`;
+  if (user.length === 0) return res.json({ message: genericMessage });
+
+  const resetToken = crypto.randomBytes(32).toString("hex");
+  const hashedToken = crypto
+    .createHash("sha256")
+    .update(resetToken)
+    .digest("hex");
+
+  await sql`
+    UPDATE users
+    SET resetpasswordtoken = ${hashedToken},
+        resetpasswordexpiry = NOW() + INTERVAL '15 minutes'
+    WHERE email = ${email}
+  `;
+
+  const resetLink = `${config.clientUrl}/reset-password/${resetToken}`;
+
+  await sendEmail({
+    to: email,
+    subject: "Password Reset",
+    text: `Reset your password using this link: ${resetLink}`,
+  });
+
+  return res.json(genericMessage);
+};
+
+export const resetPassword = async (req, res) => {
+  const { token } = req.params;
+  const { password } = req.body;
+
+  const hashedToken = crypto.createHash("sha256").update(token).digest("hex");
+
+  const user = await sql`
+    SELECT * FROM users
+    WHERE resetpasswordtoken = ${hashedToken}
+      AND resetpasswordexpiry > NOW()
+  `;
+
+  if (user.length === 0) {
+    return res
+      .status(400)
+      .json({ message: "Token is invalid or has expired." });
+  }
+
+  const hashedPassword = await hashPassword(password);
+
+  await sql`
+    UPDATE users
+    SET password = ${hashedPassword},
+        resetpasswordtoken = NULL,
+        resetpasswordexpiry = NULL
+    WHERE id = ${user[0].id}
+  `;
+
+  return res.status(200).json({ message: "Password reset successful." });
 };

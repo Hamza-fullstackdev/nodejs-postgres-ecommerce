@@ -103,6 +103,12 @@ export default function Register() {
                     className='border-x-0 border-t-0 shadow-none rounded-none focus-visible:ring-0 outline-none'
                   />
                 </div>
+                <Link
+                  href={"/forgot-password"}
+                  className='text-sm text-[#DB4444]'
+                >
+                  Forgot your password?
+                </Link>
               </div>
               <div className='mt-6 flex flex-col gap-5'>
                 <button
