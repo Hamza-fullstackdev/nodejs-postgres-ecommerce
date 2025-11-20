@@ -5,6 +5,10 @@ import containsOnlyNumbers from "../helpers/check-phone.js";
 import { hashPassword } from "../helpers/hash-password.js";
 import { comparePassword } from "../helpers/compare-password.js";
 import { generateJWT } from "../utils/generateJWT.js";
+import { sendEmail } from "../helpers/send-mail.js";
+import { nanoid } from "nanoid";
+import { config } from "../config/env-config.js";
+import { cleanValue } from "../helpers/clean-value.js";
 
 export const registerUser = async (req, res, next) => {
   const { first_name, last_name, email, password, phone } = req.body;
@@ -28,14 +32,23 @@ export const registerUser = async (req, res, next) => {
     return next(errorHandler(400, "Password encryption failed"));
 
   try {
+    const verifyToken = nanoid();
+    const verifyTokenExpiry = Date.now() + 3600000;
+    const verifyUrl = `${config.clientUrl}/verify-email?token=${verifyToken}&email=${email}`;
     const user = await sql`
-      INSERT INTO users (first_name, last_name, email, password, phone) VALUES (${first_name}, ${last_name}, ${email}, ${encryptedPassword}, ${phone}) RETURNING *
+      INSERT INTO users (first_name, last_name, email, password, phone, verifytoken, verifytokenexpiry) VALUES (${first_name}, ${last_name}, ${email}, ${encryptedPassword}, ${phone}, ${verifyToken}, ${verifyTokenExpiry}) RETURNING *
     `;
     if (user.length > 0) {
+      await sendEmail({
+        to: email,
+        subject: "Verify your email",
+        text: `Hi ${first_name} ${last_name}, welcome to Exclusive \nPlease click the link below to verify your email address:\n${verifyUrl}\n\nIf you did not request this email, please ignore it.`,
+      });
       return res.status(201).json({
         success: true,
         statusCode: 201,
-        message: "User added successfully",
+        message:
+          "Please check your email! We have sent you a verification link. Once you verify your email, you can log in to your account.",
       });
     } else {
       return next(errorHandler(500, "User insert failed"));
@@ -60,6 +73,11 @@ export const loginUser = async (req, res, next) => {
     if (user.length > 0) {
       const isPasswordMatch = await comparePassword(password, user[0].password);
       if (isPasswordMatch) {
+        const isVerified = await sql`
+          SELECT * FROM users WHERE email = ${email} AND isverified = true
+        `;
+        if (isVerified.length === 0)
+          return next(errorHandler(401, "Please verify your email first"));
         const jwtToken = generateJWT(user[0].id);
         const { password, ...rest } = user[0];
         res.cookie("token", jwtToken, {
@@ -82,5 +100,38 @@ export const loginUser = async (req, res, next) => {
     }
   } catch (error) {
     return next(errorHandler(500, "Internal Server Error"));
+  }
+};
+
+export const verifyEmail = async (req, res, next) => {
+  let { token, email } = req.query;
+
+  token = cleanValue(token);
+  email = cleanValue(email);
+
+  if (!token || !email) {
+    return next(errorHandler(400, "Token and email are required"));
+  }
+
+  try {
+    const user = await sql`
+      SELECT * FROM users WHERE email = ${email}
+    `;
+
+    if (!user[0] || user[0].verifytoken !== token) {
+      return next(errorHandler(400, "Invalid token or token has expired"));
+    }
+
+    await sql`
+      UPDATE users SET isverified = true, verifytoken = NULL, verifytokenexpiry = NULL WHERE email = ${email}
+    `;
+
+    return res
+      .status(200)
+      .json({ message: "Email verified successfully" }, { status: 200 });
+  } catch (error) {
+    return next(
+      errorHandler(500, "Something went wrong, please try again later")
+    );
   }
 };

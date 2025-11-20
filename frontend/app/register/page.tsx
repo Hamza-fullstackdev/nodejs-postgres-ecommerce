@@ -11,9 +11,9 @@ import { useState } from "react";
 import { FcGoogle } from "react-icons/fc";
 
 export default function Register() {
-  const navigate = useRouter();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const [success, setSuccess] = useState("");
   const [formData, setFormData] = useState({
     first_name: "",
     last_name: "",
@@ -43,7 +43,7 @@ export default function Register() {
       );
       setLoading(false);
       if (response.status === 201) {
-        navigate.push("/login");
+        setSuccess(response.data.message);
       }
     } catch (error: any) {
       setLoading(false);
@@ -67,6 +67,15 @@ export default function Register() {
                 <AlertCircleIcon />
                 <AlertTitle>Error</AlertTitle>
                 <AlertDescription>{error}</AlertDescription>
+              </Alert>
+            )}
+            {success && (
+              <Alert
+                className='mb-3 q-full md:max-w-[400px]'
+                variant={"default"}
+              >
+                <AlertCircleIcon />
+                <AlertDescription>{success}</AlertDescription>
               </Alert>
             )}
             <h1 className='text-2xl font-bold'>Register your account</h1>
