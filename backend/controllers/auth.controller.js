@@ -81,7 +81,7 @@ export const loginUser = async (req, res, next) => {
           return next(errorHandler(401, "Please verify your email first"));
         const jwtToken = generateJWT(user[0].id);
         const { password, ...rest } = user[0];
-        res.cookie("token", jwtToken, {
+        res.cookie(config.authCookie, jwtToken, {
           httpOnly: true,
           secure: true,
           sameSite: "none",
@@ -201,4 +201,48 @@ export const resetPassword = async (req, res) => {
   `;
 
   return res.status(200).json({ message: "Password reset successful." });
+};
+
+export const googleAuth = async (req, res, next) => {
+  try {
+    const { name, avatar, email, phone } = req.body;
+
+    const existingUser = await sql`
+      SELECT * FROM users WHERE email = ${email}
+    `;
+
+    if (existingUser.length > 0) {
+      const token = generateJWT(existingUser[0].id);
+      const { password, ...rest } = existingUser[0];
+      return res.cookie(config.authCookie, token).status(200).json(rest);
+    }
+
+    const generatedPassword = crypto.randomBytes(8).toString("hex");
+    const hashedPassword = await hashPassword(generatedPassword);
+
+    let first_name = null;
+    let last_name = null;
+
+    if (name) {
+      const split = name.split(" ");
+      first_name = split[0] ?? null;
+      last_name = split.slice(1).join(" ") || null;
+    }
+
+    const newUser = await sql`
+      INSERT INTO users (first_name, last_name, avatar, email, password, phone, isverified)
+      VALUES (${first_name}, ${last_name}, ${avatar}, ${email}, ${hashedPassword}, ${
+      phone || null
+    }, true)
+      RETURNING *
+    `;
+
+    const token = generateJWT(newUser[0].id);
+    const { password, ...rest } = newUser[0];
+
+    return res.cookie(config.authCookie, token).status(200).json(rest);
+  } catch (error) {
+    console.log(error);
+    next(error);
+  }
 };

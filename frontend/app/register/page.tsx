@@ -6,9 +6,8 @@ import axios from "axios";
 import { AlertCircleIcon } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
 import { useState } from "react";
-import { FcGoogle } from "react-icons/fc";
+import GoogleOauth from "@/app/components/GoogleOauth";
 
 export default function Register() {
   const [loading, setLoading] = useState(false);
@@ -166,10 +165,7 @@ export default function Register() {
                 >
                   Create Account
                 </button>
-                <button className='w-full flex items-center justify-center gap-3 border border-gray-300 py-2 rounded cursor-pointer'>
-                  <FcGoogle size={20} />
-                  Sign up with Google
-                </button>
+                <GoogleOauth title='Sign up with Google' />
               </div>
               <div className='mt-5 text-center'>
                 <span className='text-gray-600 text-sm'>

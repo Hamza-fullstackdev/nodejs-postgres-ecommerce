@@ -9,8 +9,8 @@ import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
-import { FcGoogle } from "react-icons/fc";
 import { useDispatch } from "react-redux";
+import GoogleOauth from "@/app/components/GoogleOauth";
 
 export default function Register() {
   const navigate = useRouter();
@@ -118,10 +118,7 @@ export default function Register() {
                 >
                   Login
                 </button>
-                <button className='w-full flex items-center justify-center gap-3 border border-gray-300 py-2 rounded cursor-pointer'>
-                  <FcGoogle size={20} />
-                  Login with Google
-                </button>
+                <GoogleOauth title='Login with Google' />
               </div>
               <div className='mt-5 text-center'>
                 <span className='text-gray-600 text-sm'>

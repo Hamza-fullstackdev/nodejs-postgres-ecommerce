@@ -9,7 +9,7 @@ export const createUserScheama = async () => {
                 last_name VARCHAR(255) NOT NULL,
                 email VARCHAR(255) UNIQUE NOT NULL,
                 password VARCHAR(255) NOT NULL,
-                phone VARCHAR(20) UNIQUE NOT NULL,
+                phone VARCHAR(20) UNIQUE,
                 avatar VARCHAR(255) DEFAULT 'https://lthzisgkdarraifglrnu.supabase.co/storage/v1/object/public/static/avatar.png',
                 role VARCHAR(255) NOT NULL DEFAULT 'user' CHECK (role IN ('user', 'admin')),
                 isverified BOOLEAN NOT NULL DEFAULT false,
