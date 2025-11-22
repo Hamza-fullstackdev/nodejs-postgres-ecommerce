@@ -81,18 +81,7 @@ export const loginUser = async (req, res, next) => {
           return next(errorHandler(401, "Please verify your email first"));
         const jwtToken = generateJWT(user[0].id);
         const { password, ...rest } = user[0];
-        res.cookie(config.authCookie, jwtToken, {
-          httpOnly: true,
-          secure: true,
-          sameSite: "none",
-          maxAge: 7 * 24 * 60 * 60 * 1000,
-        });
-        return res.status(200).json({
-          success: true,
-          statusCode: 200,
-          message: "User logged in successfully",
-          data: rest,
-        });
+        return res.cookie(config.authCookie, jwtToken).status(200).json(rest);
       } else {
         return next(errorHandler(401, "Incorrect credentials"));
       }

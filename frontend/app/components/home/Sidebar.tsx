@@ -19,7 +19,8 @@ const Sidebar = () => {
     fetcher,
     swrOptions
   );
-
+  console.log(categories);
+  console.log(error);
   if (error) return <p>Error loading categories</p>;
   if (isLoading) return <p>Loading...</p>;
 
