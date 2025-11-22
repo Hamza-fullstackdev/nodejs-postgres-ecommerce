@@ -2,6 +2,7 @@ import errorHandler from "../middlewares/error.middleware.js";
 import sql from "../config/db.js";
 import { config } from "../config/env-config.js";
 import { createClient } from "@supabase/supabase-js";
+import redis from "../config/redis.js";
 
 const supabase = createClient(config.supabaseUrl, config.supabaseServiceKey);
 
@@ -43,10 +44,18 @@ export const addCategory = async (req, res, next) => {
 
 export const getAllCategories = async (req, res, next) => {
   try {
+    const cacheKey = "get-category";
+    const cachedCategories = await redis.get(cacheKey);
+
+    if (cachedCategories) {
+      return res.status(200).json(JSON.parse(cachedCategories));
+    }
     const categories = await sql`
       SELECT * FROM categories ORDER BY name DESC
     `;
-    return res.status(200).json(categories.slice(0, 100));
+
+    await redis.setEx(cacheKey, config.redisTTL, JSON.stringify(categories));
+    return res.status(200).json(categories);
   } catch (error) {
     return next(errorHandler(500, "Error getting categories"));
   }

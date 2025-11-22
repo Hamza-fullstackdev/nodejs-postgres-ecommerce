@@ -14,6 +14,11 @@ const _config = {
   emailPort: Number(process.env.EMAIL_PORT),
   emailUser: process.env.EMAIL_USER,
   emailPassword: process.env.EMAIL_PASSWORD,
+  redisHost: process.env.REDIS_HOST,
+  redisPort: Number(process.env.REDIS_PORT),
+  redisPassword: process.env.REDIS_PASSWORD,
+  redisTTL: Number(process.env.REDIS_TTL),
+  redisCloudUrl: process.env.REDIS_CLOUD_URL,
 };
 
 export const config = Object.freeze(_config);

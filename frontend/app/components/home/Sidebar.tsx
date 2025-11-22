@@ -1,51 +1,36 @@
+"use client";
+import useSWR, { useSWRConfig } from "swr";
 import Link from "next/link";
-import React from "react";
+import { fetcher, swrOptions } from "@/app/components/fetch";
 
-const categories = [
-  {
-    label: "Men's Fashion",
-    link: "/men-fashion",
-  },
-  {
-    label: "Women's Fashion",
-    link: "/women-fashion",
-  },
-  {
-    label: "Electronics",
-    link: "/electronics",
-  },
-  {
-    label: "Home & Lifestyle",
-    link: "/home-lifestyle",
-  },
-  {
-    label: "Sports & outdoor",
-    link: "/sports-outdoor",
-  },
-  {
-    label: "Groceries & pets",
-    link: "/groceries-pets",
-  },
-  {
-    label: "Medician",
-    link: "/medician",
-  },
-  {
-    label: "Jewellery",
-    link: "/jewellery",
-  },
-  {
-    label: "Toys",
-    link: "/toys",
-  },
-];
+interface Categories {
+  name: string;
+  slug: string;
+  image: string;
+}
+
 const Sidebar = () => {
+  const {
+    data: categories,
+    error,
+    isLoading,
+  } = useSWR<Categories[]>(
+    `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/v1/category/get-all`,
+    fetcher,
+    swrOptions
+  );
+
+  if (error) return <p>Error loading categories</p>;
+  if (isLoading) return <p>Loading...</p>;
+
   return (
     <aside className='hidden md:block w-1/5 border-r border-gray-300'>
       <ul className='mt-5 flex flex-col gap-y-4'>
-        {categories.map((item, index) => (
+        {categories?.map((item, index) => (
           <li key={index}>
-            <Link href={item.link}>{item.label}</Link>
+            <Link href={item?.slug} className='flex items-center gap-x-3'>
+              {item?.name}
+            </Link>
           </li>
         ))}
       </ul>
