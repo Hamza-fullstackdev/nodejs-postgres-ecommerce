@@ -19,14 +19,19 @@ const Sidebar = () => {
     fetcher,
     swrOptions
   );
-  console.log(categories);
-  console.log(error);
-  if (error) return <p>Error loading categories</p>;
-  if (isLoading) return <p>Loading...</p>;
 
   return (
-    <aside className='hidden md:block w-1/5 border-r border-gray-300'>
+    <aside
+      className={`${
+        isLoading ? "bg-gray-200 animate-pulse" : ""
+      } hidden md:block w-1/5 border-r border-gray-300`}
+    >
       <ul className='mt-5 flex flex-col gap-y-4'>
+        {error && (
+          <p className='text-sm text-red-500'>
+            {error?.message || "Something went wrong"}
+          </p>
+        )}
         {categories?.map((item, index) => (
           <li key={index}>
             <Link href={item?.slug} className='flex items-center gap-x-3'>

@@ -11,13 +11,13 @@ import verifyJwt from "../utils/verifyJWT.js";
 
 const router = express.Router();
 
-router.post("/add-category", upload.single("image"), verifyJwt, addCategory);
+router.post("/add-category", verifyJwt, upload.single("image"), addCategory);
 router.get("/get-all", verifyJwt, getAllCategories);
 router.get("/get-category/:id", verifyJwt, getCategoryById);
 router.patch(
   "/update-category/:id",
-  verifyJwt,
   upload.single("image"),
+  verifyJwt,
   updateCategory
 );
 router.delete("/delete-category/:id", verifyJwt, deleteCategory);

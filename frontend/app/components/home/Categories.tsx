@@ -1,3 +1,5 @@
+"use client";
+import useSWR from "swr";
 import {
   Carousel,
   CarouselContent,
@@ -5,9 +7,20 @@ import {
   CarouselNext,
   CarouselPrevious,
 } from "@/components/ui/carousel";
-import Image from "next/image";
-
+import { Spinner } from "@/components/ui/spinner";
+interface Categories {
+  name: string;
+  slug: string;
+  image: string;
+}
 const Categories = () => {
+  const {
+    data: categories,
+    error,
+    isLoading,
+  } = useSWR<Categories[]>(
+    `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/v1/category/get-all`
+  );
   return (
     <section className='my-22'>
       <div>
@@ -19,9 +32,14 @@ const Categories = () => {
         </div>
       </div>
       <div>
+        {isLoading && (
+          <div className='flex items-center justify-center'>
+            <Spinner className='size-8' />{" "}
+          </div>
+        )}
         <Carousel className='w-full h-[300px]'>
           <CarouselContent className='-ml-1'>
-            {Array.from({ length: 5 }).map((_, index) => (
+            {categories?.map((item, index) => (
               <CarouselItem
                 key={index}
                 className='relative pl-1 md:basis-1/2 lg:basis-1/3 xl:basis-1/4'
@@ -30,16 +48,12 @@ const Categories = () => {
                   <div>
                     <div className='flex items-center justify-center p-6'>
                       <div>
-                        <div className='w-[290px] h-[230px] border border-gray-300 hover:bg-[#DB4444] hover:text-white transition duration-300 cursor-pointer flex items-center justify-center'>
+                        <div
+                          className='w-[290px] h-[230px] bg-cover object-cover cursor-pointer flex items-center justify-center'
+                          style={{ backgroundImage: `url(${item.image})` }}
+                        >
                           <div className='flex flex-col gap-y-3'>
-                            <Image
-                              src={"/static/computer.png"}
-                              alt='category'
-                              width={100}
-                              height={100}
-                              className='size-auto'
-                            />
-                            <h3>Phones</h3>
+                            <h3 className='text-white'>{item.name}</h3>
                           </div>
                         </div>
                       </div>

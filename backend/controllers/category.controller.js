@@ -38,6 +38,7 @@ export const addCategory = async (req, res, next) => {
     `;
     return res.status(201).json(category[0]);
   } catch (error) {
+    console.log(error);
     return next(errorHandler(500, "Error adding category"));
   }
 };
